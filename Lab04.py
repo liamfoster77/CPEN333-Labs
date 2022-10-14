@@ -70,25 +70,32 @@ def sortingWorker(firstHalf: bool) -> None:
             sortHalf(pi + 1, high, destination)
 
 
-    # Driver code
-    
-    # check if firstHalf is True or not and assign the start and end indices
-    # and the destination array address to their respective values
+    # Driver code    
+    # check if firstHalf is True or not
     if firstHalf == True:
+        # assign start and end indices
         start = 0
         end = int(len(testcase)/2)
-        global sortedFirstHalf 
+
+        # declare sortedFirstHalf as global
+        global sortedFirstHalf
+        # copy first half of testcase to sortedFirstHalf
         sortedFirstHalf = testcase[start:end].copy()
+        # call recursive sort function
         sortHalf(0,len(sortedFirstHalf)-1,sortedFirstHalf)
+    
     elif firstHalf == False:
+        # assign start and end indices
         start = int(len(testcase)/2)
         end = int(len(testcase))
+
+        # declare sortedSecondHalf as global
         global sortedSecondHalf
+        # copy second half of testcase to sortedFirstHalf
         sortedSecondHalf = testcase[start:end].copy()
+        # call recursive sort function
         sortHalf(0,len(sortedSecondHalf)-1,sortedSecondHalf)
     
-    
-    # call recursive sorting function
     
 
 
@@ -98,19 +105,24 @@ def mergingWorker() -> None:
         them into a single sorted list that is stored in
         the shared variable sortedFullList.
     """
-    
+    # initialize counting and end indices
     i = 0
     j = 0
     end = len(sortedFirstHalf)
 
+    # while the counting indices are within the length of the half-arrays
     while i < end and j < end:
+        # check if value in first half is less than value in second half 
+        # and append the smaller one to SortedFullList
         if sortedFirstHalf[i] <= sortedSecondHalf[j]:
             SortedFullList.append(sortedFirstHalf[i])
             i += 1
         else:
             SortedFullList.append(sortedSecondHalf[j])
             j += 1
-        
+    
+    # check if one half is exhausted and loop through the rest of the other
+    # half to append the rest of the values 
     if i >= end:
         while j < end:
             SortedFullList.append(sortedSecondHalf[j])
@@ -130,15 +142,17 @@ if __name__ == "__main__":
     sortedSecondHalf: list = []
     SortedFullList: list = []
     
-    #creating half sort threads
+    # creating and starting threads for sorting each half of testcase
     firstHalf = threading.Thread(target=sortingWorker,args=(True,))
     secondHalf = threading.Thread(target=sortingWorker,args=(False,))
     firstHalf.start()
     secondHalf.start()
-    #join the halves before merging
+    # join the threads before merging so that it doesn't merge them before
+    # the threads are done sorting each half
     firstHalf.join()
     secondHalf.join()
     
+    # create, start, and join the merging thread once the other threads are done
     merge = threading.Thread(target=mergingWorker)
     merge.start() 
     merge.join()
